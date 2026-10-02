@@ -9,6 +9,7 @@ source.exclude_exts = spec, md, txt
 version = 1.0
 requirements = python3,kivy==2.3.0
 orientation = portrait
+icon.filename = icon.png
 
 [buildozer]
 log_level = 2
