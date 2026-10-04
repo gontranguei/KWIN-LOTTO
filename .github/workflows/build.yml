@@ -8,30 +8,26 @@ jobs:
   construire:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+
+      - name: Setup Android SDK - Fix licence 37
+        uses: android-actions/setup-android@v3
 
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
-      - name: Install dependencies & Accept Licences
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev libltdl-dev
           pip install --upgrade buildozer Cython==0.29.33
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          mkdir -p $ANDROID_HOME/licenses
-          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $ANDROID_HOME/licenses/android-sdk-license
-          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> $ANDROID_HOME/licenses/android-sdk-license
-          echo "24333f8a63b6825ea9c5514f83c1059b8ea7315b" >> $ANDROID_HOME/licenses/android-sdk-license
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "build-tools;37.0.0" || true
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          yes | sdkmanager --licenses
+          yes | sdkmanager "build-tools;37.0.0"
 
       - name: Build APK
-        run: |
-          buildozer android debug
+        run: buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
